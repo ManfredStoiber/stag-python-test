@@ -23,7 +23,7 @@ set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(OpenCV 4 REQUIRED)
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED)
 find_package(NumPy REQUIRED)
 
 add_subdirectory(submodules/pybind11)
@@ -31,7 +31,7 @@ include_directories("submodules/pybind11/include")
 include_directories("submodules/pybind11_opencv_numpy")
 
 pybind11_add_module(stag
-        StagPy.cpp
+        StagModule.cpp
         submodules/pybind11_opencv_numpy/ndarray_converter.cpp
 )
 

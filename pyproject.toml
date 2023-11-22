@@ -1,0 +1,53 @@
+[project]
+name = "stag-python"
+version = "0.0.4"
+authors = [
+    {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
+]
+description = "STag - A Stable, Occlusion-Resistant Fiducial Marker System"
+requires-python = ">=3.6"
+readme = "README.md"
+dependencies = [
+    "numpy", # TODO
+    "opencv-python"
+]
+dynamic = ["optional-dependencies"]
+
+[build-system]
+requires = [
+    "setuptools>=61",
+    "setuptools-scm>=8.0"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+skip = [
+    "*-musllinux*"
+]
+
+[tool.cibuildwheel.linux]
+before-all = [
+    "yum install -y python3 python3-pip python3-devel wget",
+    "yum install -y opencv opencv-devel opencv-python",
+    "wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip && unzip -q eigen-3.4.0.zip",
+    "mv eigen-3.4.0 /usr/local/include/eigen3",
+    "pip3 install --upgrade pip",
+    "pip3 install opencv-python",
+    "wget -O opencv.zip https://github.com/opencv/opencv/archive/4.8.0.zip",
+    "unzip -q opencv.zip",
+    "cd opencv-4.8.0",
+    "mkdir build && cd build",
+    "cmake ..",
+    "make -j10",
+    "make install ."
+]
+
+[tool.setuptools]
+license-files = [
+    "submodules/*/LICENSE",
+    "LICENSE"
+]
+py-modules = []
+
+[tool.setuptools.package-data]
+"stag" = ["*.*"]

@@ -1,4 +1,5 @@
 # This file is heavily inspired by: https://github.com/pybind/cmake_example/blob/master/setup.py
+
 import os
 import re
 import subprocess
@@ -130,15 +131,9 @@ class CMakeBuild(build_ext):
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name="stag-python",
-    version="0.0.1",
-    author="Manfred.Stoiber",
-    author_email="manfred.stoiber@gmail.com",
-    description="STag - A Stable, Occlusion-Resistant Fiducial Marker System",
-    long_description=readme,
-    ext_modules=[CMakeExtension("stag")],
+    ext_modules=[
+        CMakeExtension("stag"),
+    ],
     cmdclass={"build_ext": CMakeBuild},
-    zip_safe=False,
     extras_require={"test": ["pytest>=6.0"]},
-    python_requires=">=3.7",
 )
