@@ -15,8 +15,7 @@ dynamic = ["optional-dependencies"]
 
 [build-system]
 requires = [
-    "setuptools>=61",
-    "setuptools-scm>=8.0"
+    "setuptools",
 ]
 build-backend = "setuptools.build_meta"
 

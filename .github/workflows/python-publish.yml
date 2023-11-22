@@ -17,6 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
@@ -31,8 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: true
+          submodules: recursive
 
       - name: Build SDist
         run: pipx run build --sdist
