@@ -9,6 +9,22 @@ from pathlib import Path
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
+def get_virtualenv_path():
+    """Used to work out path to install compiled binaries to."""
+    if hasattr(sys, 'real_prefix'):
+        return sys.prefix
+
+    if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
+        return sys.prefix
+
+    if 'conda' in sys.prefix:
+        return sys.prefix
+
+    return None
+
+def compile_and_install_opencv():
+    pass
+
 with open('README.md') as f:
     readme = f.read()
 
@@ -119,6 +135,24 @@ class CMakeBuild(build_ext):
         build_temp = Path(self.build_temp) / ext.name
         if not build_temp.exists():
             build_temp.mkdir(parents=True)
+
+        build_temp_opencv = Path(self.build_temp) / "opencv"
+        if not build_temp_opencv.exists():
+            build_temp_opencv.mkdir(parents=True)
+
+        compile_and_install_opencv()
+
+        venv_path = get_virtualenv_path()
+
+        # compile OpenCV
+        subprocess.run(
+            ["cmake", ext.sourcedir + "/submodules/stag/opencv", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(venv_path), *cmake_args], cwd=build_temp_opencv, check=True
+        )
+
+        # install OpenCV
+        subprocess.run(
+            ["cmake", "--build", ".", *build_args], cwd=build_temp_opencv, check=True
+        )
 
         subprocess.run(
             ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
