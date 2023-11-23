@@ -24,8 +24,8 @@ std::vector<int> getIds(Stag *stag) {
     return ret;
 }
 
-std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage) {
-    Stag stag(21, 7, true);
+std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage, int libraryHD, int errorCorrection) {
+    Stag stag(libraryHD, errorCorrection, true);
     stag.detectMarkers(inImage);
     return std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>>{getCorners(&stag), getIds(&stag)};
 }

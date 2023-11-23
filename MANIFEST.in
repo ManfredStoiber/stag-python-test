@@ -1,0 +1,4 @@
+graft cmake
+graft submodules
+include StagModule.cpp
+include StagWrapper.cpp

@@ -16,6 +16,7 @@ dynamic = ["optional-dependencies"]
 [build-system]
 requires = [
     "setuptools",
+    "numpy"
 ]
 build-backend = "setuptools.build_meta"
 

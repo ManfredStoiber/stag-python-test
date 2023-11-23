@@ -23,7 +23,7 @@ set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(OpenCV 4 REQUIRED)
-find_package(Eigen3 3.3 REQUIRED)
+#find_package(Eigen3 3.3 REQUIRED)
 find_package(NumPy REQUIRED)
 
 add_subdirectory(submodules/pybind11)
@@ -40,6 +40,7 @@ file(GLOB SRC_FILE2 "submodules/stag/src/ED/*.c*")
 
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
+    ${NUMPY_INCLUDES}
     stag/
     stag/ED/
 )
