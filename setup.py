@@ -9,7 +9,7 @@ from pathlib import Path
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
-def get_virtualenv_path():
+def get_install_path():
     """Used to work out path to install compiled binaries to."""
     if hasattr(sys, 'real_prefix'):
         return sys.prefix
@@ -20,7 +20,7 @@ def get_virtualenv_path():
     if 'conda' in sys.prefix:
         return sys.prefix
 
-    return None
+    return sys.prefix
 
 def compile_and_install_opencv():
     pass
@@ -132,9 +132,9 @@ class CMakeBuild(build_ext):
                 # CMake 3.12+ only.
                 build_args += [f"-j{self.parallel}"]
 
-        build_temp = Path(self.build_temp) / ext.name
-        if not build_temp.exists():
-            build_temp.mkdir(parents=True)
+        build_temp_stag = Path(self.build_temp) / ext.name
+        if not build_temp_stag.exists():
+            build_temp_stag.mkdir(parents=True)
 
         build_temp_opencv = Path(self.build_temp) / "opencv"
         if not build_temp_opencv.exists():
@@ -142,25 +142,32 @@ class CMakeBuild(build_ext):
 
         compile_and_install_opencv()
 
-        venv_path = get_virtualenv_path()
+        install_path = get_install_path()
+
+        import numpy
+        numpy_include_dir = numpy.get_include()
 
         # compile OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + "/submodules/stag/opencv", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(venv_path), *cmake_args], cwd=build_temp_opencv, check=True
+            ["cmake", ext.sourcedir + "/submodules/stag/opencv", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(install_path), f"-DPYTHON3_NUMPY_INCLUDE_DIRS={numpy_include_dir}", *cmake_args], cwd=build_temp_opencv, check=True
         )
 
-        # install OpenCV
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp_opencv, check=True
         )
 
+        # install OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
-        )
-        subprocess.run(
-            ["cmake", "--build", ".", *build_args], cwd=build_temp, check=True
+            ["cmake", "--install", ".", *build_args], cwd=build_temp_opencv, check=True
         )
 
+        # compile stag
+        subprocess.run(
+            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp_stag, check=True
+        )
+        subprocess.run(
+            ["cmake", "--build", ".", *build_args], cwd=build_temp_stag, check=True
+        )
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
