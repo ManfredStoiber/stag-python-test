@@ -5,12 +5,13 @@ import numpy as np
 img_path = "testimage.jpg"
 img = cv2.imread(img_path)
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-(corners, ids) = stag.detectMarkers(img_gray)
+(corners, ids, rejected_corners) = stag.detectMarkers(img_gray, 21, 7)
 
 img_out = img
 
+# draw detected markers
 for bounding_box, id in zip(corners, ids):
-    bounding_box = np.round(bounding_box).astype(int)
+    bounding_box = np.round(bounding_box[0]).astype(int)
     green = (50, 255, 50)
     red = (0, 0, 255)
     white = (255, 255, 255)
@@ -36,6 +37,22 @@ for bounding_box, id in zip(corners, ids):
 
     img_out = cv2.putText(img_out, f"{id}", center, cv2.FONT_HERSHEY_DUPLEX, 2, white, 5, cv2.LINE_AA)
     img_out = cv2.putText(img_out, f"{id}", center, cv2.FONT_HERSHEY_DUPLEX, 2, red, 2, cv2.LINE_AA)
+
+# draw rejected quads
+for bounding_box in rejected_corners:
+    bounding_box = np.round(bounding_box[0]).astype(int)
+    purple = (255, 0, 255)
+    white = (255, 255, 255)
+
+    center = tuple(np.round(np.mean(bounding_box, axis=0)).astype(int))
+
+    # draw white border
+    for i in range(4):
+        img_out = cv2.line(img_out, tuple(map(int, bounding_box[i])), tuple(map(int, bounding_box[(i+1)%4])), white, 3, cv2.LINE_AA)
+
+    # draw purple border
+    for i in range(4):
+        img_out = cv2.line(img_out, tuple(map(int, bounding_box[i])), tuple(map(int, bounding_box[(i+1)%4])), purple, 2, cv2.LINE_AA)
 
 
 cv2.imwrite("testimage_result.jpg", img_out)

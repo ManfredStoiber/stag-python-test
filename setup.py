@@ -149,11 +149,11 @@ class CMakeBuild(build_ext):
 
         # compile OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + "/submodules/stag/opencv", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(install_path), f"-DPYTHON3_NUMPY_INCLUDE_DIRS={numpy_include_dir}", *cmake_args], cwd=build_temp_opencv, check=True
+            ["cmake", ext.sourcedir + "/submodules/stag/submodules/opencv", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(install_path), f"-DPYTHON3_NUMPY_INCLUDE_DIRS={numpy_include_dir}", *cmake_args], cwd=build_temp_opencv, check=True
         )
 
         subprocess.run(
-            ["cmake", "--build", ".", *build_args], cwd=build_temp_opencv, check=True
+            ["cmake", "--build", ".", "-j10", *build_args], cwd=build_temp_opencv, check=True
         )
 
         # install OpenCV

@@ -23,7 +23,7 @@ set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(OpenCV 4 REQUIRED)
-#find_package(Eigen3 3.3 REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE) # TODO: neccesary for cmake but not working with pip?
 find_package(NumPy REQUIRED)
 
 add_subdirectory(submodules/pybind11)
