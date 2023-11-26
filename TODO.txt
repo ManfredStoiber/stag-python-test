@@ -1,0 +1,4 @@
+- clean code
+- resolve UNKNOWN bug in cp36
+- resolve bug where markers are detected multiple times
+- test on windows

@@ -1,4 +1,5 @@
 # This file is heavily inspired by: https://github.com/pybind/cmake_example/blob/master/setup.py
+opencv_version = "4.8.1"
 
 import os
 import re
@@ -6,20 +7,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+import requests
+import zipfile
+
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
 def get_install_path():
-    """Used to work out path to install compiled binaries to."""
-    if hasattr(sys, 'real_prefix'):
-        return sys.prefix
-
-    if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
-        return sys.prefix
-
-    if 'conda' in sys.prefix:
-        return sys.prefix
-
     return sys.prefix
 
 def compile_and_install_opencv():
@@ -140,18 +134,32 @@ class CMakeBuild(build_ext):
         if not build_temp_opencv.exists():
             build_temp_opencv.mkdir(parents=True)
 
-        compile_and_install_opencv()
+        # exclude modules not required
+        opencv_exclude_modules = [
+            "ts",
+            "stitching",
+            "objdetect",
+            "photo",
+            "ml",
+            "python3"
+        ]
+        opencv_exclude_modules_args = [f"-DBUILD_opencv_{module}=OFF" for module in opencv_exclude_modules]
 
-        install_path = get_install_path()
+        # download OpenCV
+        print(f"Downloading OpenCV {opencv_version}..")
+        url = f"https://github.com/opencv/opencv/archive/refs/tags/{opencv_version}.zip"
+        r = requests.get(url, allow_redirects=True)
 
-        import numpy
-        numpy_include_dir = numpy.get_include()
+        print(f"Extracting OpenCV {opencv_version}..")
+        opencv_zipfile = f"{self.build_temp}/opencv.zip"
+        open(opencv_zipfile, "wb").write(r.content)
+        with zipfile.ZipFile(opencv_zipfile, 'r') as zip_ref:
+            zip_ref.extractall(f"{ext.sourcedir}/submodules")
 
         # compile OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + "/submodules/stag/submodules/opencv", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(install_path), f"-DPYTHON3_NUMPY_INCLUDE_DIRS={numpy_include_dir}", *cmake_args], cwd=build_temp_opencv, check=True
+            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(sys.prefix), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True
         )
-
         subprocess.run(
             ["cmake", "--build", ".", "-j10", *build_args], cwd=build_temp_opencv, check=True
         )
@@ -176,5 +184,4 @@ setup(
         CMakeExtension("stag"),
     ],
     cmdclass={"build_ext": CMakeBuild},
-    extras_require={"test": ["pytest>=6.0"]},
 )
