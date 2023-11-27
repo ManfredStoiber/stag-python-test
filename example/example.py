@@ -2,12 +2,13 @@ import stag
 import cv2
 import numpy as np
 
-img_path = "testimage.jpg"
-img = cv2.imread(img_path)
-img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-(corners, ids, rejected_corners) = stag.detectMarkers(img_gray, 21, 7)
+# load image
+image = cv2.imread("example.jpg")
 
-img_out = img
+# detect markers
+(corners, ids, rejected_corners) = stag.detectMarkers(image, 21)
+
+img_out = image
 
 # draw detected markers
 for bounding_box, id in zip(corners, ids):
@@ -55,8 +56,8 @@ for bounding_box in rejected_corners:
         img_out = cv2.line(img_out, tuple(map(int, bounding_box[i])), tuple(map(int, bounding_box[(i+1)%4])), purple, 2, cv2.LINE_AA)
 
 
-cv2.imwrite("testimage_result.jpg", img_out)
+cv2.imwrite("example_result.jpg", img_out)
 print("Detected Corners: ", corners)
 print("Detected Ids: ", ids)
-print("Results are visualized in testimage_result.jpg")
+print("Results are visualized in example_result.jpg")
 

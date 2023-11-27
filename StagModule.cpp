@@ -3,7 +3,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
-#include<vector>
+#include <vector>
 #include "submodules/stag/src/Marker.h"
 #include "submodules/stag/src/Stag.h"
 using cv::Mat;
