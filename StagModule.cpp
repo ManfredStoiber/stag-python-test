@@ -26,7 +26,7 @@ py::tuple getCorners(Stag *stag) {
 
 py::array getIds(Stag *stag) {
     std::vector<int> ret_vec;
-    for (Marker marker : stag->markers) {
+    for (const Marker& marker : stag->markers) {
         ret_vec.push_back(marker.id);
     }
     py::array ret = py::cast(ret_vec);
@@ -46,8 +46,8 @@ py::tuple getRejectedImgPoints(Stag *stag) {
     return ret;
 }
 
-py::tuple detectMarkers(Mat inImage, int libraryHD, int errorCorrection) {
-    Stag stag(libraryHD, errorCorrection, true);
+py::tuple detectMarkers(const Mat &inImage, int libraryHD, int errorCorrection=-1) {
+    Stag stag(libraryHD, errorCorrection);
     stag.detectMarkers(inImage);
     py::tuple ret = py::make_tuple(getCorners(&stag), getIds(&stag), getRejectedImgPoints(&stag));
     return ret;
