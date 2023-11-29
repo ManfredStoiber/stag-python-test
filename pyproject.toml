@@ -1,5 +1,5 @@
 [project]
-name = "stag-python"
+name = "stag"
 version = "0.1.7"
 authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
@@ -13,19 +13,22 @@ dependencies = [
 
 [build-system]
 requires = [
-    "setuptools",
+    "scikit_build_core>=0.3.3",
+    "pybind11",
     "oldest-supported-numpy",
     "requests",
     "urllib3<2" # requests does not work with urllib>2 on python 3.7, since openssl1.1.1+ is not available
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
-[tool.setuptools]
-license-files = [
-    "submodules/*/LICENSE",
-    "LICENSE"
-]
-py-modules = []
+#[tool.setuptools]
+#license-files = [
+#    "submodules/*/LICENSE",
+#    "LICENSE"
+#]
 
-[tool.setuptools.package-data]
+[tool.scikit-build]
+wheel.expand-macos-universal-tags = true
+
+#[tool.setuptools.package-data]
 #"stag" = ["libopencv_imgproc*", "libopencv_core*"]

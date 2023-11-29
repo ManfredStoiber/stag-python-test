@@ -1,11 +1,15 @@
-#include "submodules/pybind11_opencv_numpy/ndarray_converter.h"
-#include <pybind11/cast.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/numpy.h>
+#include "ndarray_converter.h"
+#include "pybind11/cast.h"
+#include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
+#include "pybind11/numpy.h"
 #include <vector>
-#include "submodules/stag/src/Marker.h"
-#include "submodules/stag/src/Stag.h"
+#include "../submodules/stag/src/Marker.h"
+#include "../submodules/stag/src/Stag.h"
+
+#define STRINGIFY(x) #x
+#define MACRO_STRINGIFY(x) STRINGIFY(x)
+
 using cv::Mat;
 
 namespace py = pybind11;
@@ -53,7 +57,22 @@ py::tuple detectMarkers(const Mat &inImage, int libraryHD, int errorCorrection=-
     return ret;
 }
 
-PYBIND11_MODULE(stag, m) {
+int add(int i, int j) {
+    return i + j;
+}
+
+PYBIND11_MODULE(_core, m) {
     NDArrayConverter::init_numpy();
-    m.def("detectMarkers", &detectMarkers, "Detect STag markers in image. Returns (corners, ids, rejectedImgPoints) of detected markers.");
+    m.def("add", &add, R"pbdoc(
+        Subtract two numbers
+
+        Some other explanation about the subtract function.
+    )pbdoc");
+    //m.def("detectMarkers", &detectMarkers, "Detect STag markers in image. Returns (corners, ids, rejectedImgPoints) of detected markers.");
+
+#ifdef VERSION_INFO
+    m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
+#else
+    m.attr("__version__") = "dev";
+#endif
 }

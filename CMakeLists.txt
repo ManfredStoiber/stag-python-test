@@ -1,9 +1,26 @@
-cmake_minimum_required(VERSION 3.16)
-project(stag-python)
+cmake_minimum_required(VERSION 3.15...3.27)
+project(
+  ${SKBUILD_PROJECT_NAME}
+  VERSION ${SKBUILD_PROJECT_VERSION}
+  LANGUAGES CXX)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
+
+function(print_all_targets DIR)
+    get_property(TGTS DIRECTORY "${DIR}" PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(TGT IN LISTS TGTS)
+        message(STATUS "Target: ${TGT}")
+        # TODO: Do something about it
+    endforeach()
+
+    get_property(SUBDIRS DIRECTORY "${DIR}" PROPERTY SUBDIRECTORIES)
+    foreach(SUBDIR IN LISTS SUBDIRS)
+        print_all_targets("${SUBDIR}")
+    endforeach()
+endfunction()
+
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -22,17 +39,25 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-find_package(OpenCV 4 REQUIRED)
+add_subdirectory(submodules/opencv-4.8.1)
+#print_all_targets(.)
+
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(pybind11 CONFIG REQUIRED)
+#find_package(OpenCV 4 REQUIRED)
 find_package(NumPy REQUIRED)
 
-add_subdirectory(submodules/pybind11)
+#add_subdirectory(submodules/pybind11)
 include_directories("submodules/pybind11/include")
 include_directories("submodules/pybind11_opencv_numpy")
 
-pybind11_add_module(stag
-        StagModule.cpp
-        submodules/pybind11_opencv_numpy/ndarray_converter.cpp
-)
+python_add_library(_core MODULE src/main.cpp submodules/pybind11_opencv_numpy/ndarray_converter.cpp WITH_SOABI)
+target_link_libraries(_core PRIVATE pybind11::headers)
+
+##pybind11_add_module(stag
+##        src/StagModule.cpp
+##        submodules/pybind11_opencv_numpy/ndarray_converter.cpp
+##)
 
 file(GLOB SRC_FILE1 "submodules/stag/src/*.c*")
 file(GLOB SRC_FILE2 "submodules/stag/src/ED/*.c*")
@@ -54,9 +79,12 @@ target_link_libraries(
 )
 
 target_link_libraries(
-    stag PRIVATE
-    ${OpenCV_LIBS}
-    staglib
+    _core PRIVATE
+    #${OpenCV_LIBS}
+    #staglib
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/app)
+MESSAGE("${OpenCV_LIBS}")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/app)
+install(TARGETS _core DESTINATION stag)
+install(TARGETS opencv_core opencv_imgproc DESTINATION stag)

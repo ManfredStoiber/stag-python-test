@@ -2,3 +2,4 @@
 - test on windows
 - update cibw dependency to support python 3.12
 - Die änderungen von den anderen Forks mit rein nehmen (interface statt public, clear markers, etc.)
+- Package struktur ändern dass die sachen nicht direkt in site-packages landen
