@@ -58,5 +58,3 @@ target_link_libraries(
     ${OpenCV_LIBS}
     staglib
 )
-
-# install(TARGETS _core staglib DESTINATION testdir)

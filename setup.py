@@ -19,9 +19,6 @@ from distutils.dir_util import mkpath
 def get_install_path():
     return sys.prefix
 
-def compile_and_install_opencv():
-    pass
-
 # Convert distutils Windows platform specifiers to CMake -A arguments
 PLAT_TO_CMAKE = {
     "win32": "Win32",
@@ -58,17 +55,14 @@ class CMakeBuild(build_ext):
 
         # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
         cmake_args = [
-            # since DLL and non-DLL systems are handled differently
-            # in cmake, generate both LIBRARY and RUNTIME artifacts to extdir
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
         ]
         
-        test_args = [
+        cmake_stag_args = [
+            # Set output directory for generated shared libraries
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}stag",
-            # f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY={extdir}{os.sep}",               
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}{os.sep}stag",
-            # f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}{os.sep}",
         ]
         
         build_args = []
@@ -76,9 +70,6 @@ class CMakeBuild(build_ext):
         # (needed e.g. to build for ARM OSx on conda-forge)
         if "CMAKE_ARGS" in os.environ:
             cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ") if item]
-
-        # In this example, we pass in the version to C++. You might not need to.
-        #cmake_args += [f"-DEXAMPLE_VERSION_INFO={self.distribution.get_version()}"]
 
         if self.compiler.compiler_type != "msvc":
             # Using Ninja-build since it a) is available as a wheel and b)
@@ -162,9 +153,9 @@ class CMakeBuild(build_ext):
         with zipfile.ZipFile(opencv_zipfile, 'r') as zip_ref:
             zip_ref.extractall(f"{ext.sourcedir}/submodules")
 
-        # compile OpenCV
+        # compile and install OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", f"-DCMAKE_INSTALL_PREFIX={get_install_path()}", *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True # TODO: remove install prefix
+            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", f"-DCMAKE_INSTALL_PREFIX={get_install_path()}", *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True
         )
         subprocess.run(
             ["cmake", "--build", ".", "-j10", *build_args], cwd=build_temp_opencv, check=True
@@ -175,15 +166,12 @@ class CMakeBuild(build_ext):
 
         # compile stag
         subprocess.run(
-            ["cmake", ext.sourcedir, *cmake_args, *test_args], cwd=build_temp_stag, check=True
+            ["cmake", ext.sourcedir, *cmake_args, *cmake_stag_args], cwd=build_temp_stag, check=True
         )
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp_stag, check=True
         )
 
-
-# The information here can also be placed in setup.cfg - better separation of
-# logic and declaration, and simpler if you include description/version in a file.
 setup(
     ext_modules=[
         CMakeExtension("stag"),

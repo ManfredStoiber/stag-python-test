@@ -67,8 +67,7 @@ cv::Scalar borderColorToScalar(const py::iterable& borderColor) {
  * @param libraryHD The library HD that is used. Possible values are [11,&nbsp;13,&nbsp;15,&nbsp;17,&nbsp;19,&nbsp;21,&nbsp;23].
  * @param errorCorrection The amount of error correction that is going to be used.
  *  Value needs to be in range 0&nbsp;\<=&nbsp;errorCorrection&nbsp;\<=&nbsp;(HD-1)/2.\n
- *  If set to -1, the max possible value for the given library HD
- *  is used.
+ *  If set to -1, the max possible value for the given library HD is used.
  * @returns Tuple of (corners, ids, rejectedImgPoints) of detected markers
  */
 py::tuple detectMarkers(const Mat &image, int libraryHD, int errorCorrection=-1) {

@@ -1,4 +1,4 @@
-[![Build and upload to PyPI](https://github.com/ManfredStoiber/stag-python-test/actions/workflows/python-publish.yml/badge.svg)](https://github.com/ManfredStoiber/stag-python-test/actions/workflows/python-publish.yml)
+[![Build and upload to PyPI](https://github.com/ManfredStoiber/stag-python/actions/workflows/python-publish.yml/badge.svg)](https://github.com/ManfredStoiber/stag-python/actions/workflows/python-publish.yml)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/stag-python)
 
 

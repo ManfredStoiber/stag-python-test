@@ -12,6 +12,4 @@ for d in os.walk('.'):
         break
 
 # run delvewheel
-print("Run command: ", flush=True)
-print(" ".join(["delvewheel",  "repair", "--add-path", f"{path}", "-w", f"{sys.argv[1]}", f"{sys.argv[2]}"]))
 subprocess.run(["delvewheel",  "repair", "--add-path", f"{path}", "-w", f"{sys.argv[1]}", f"{sys.argv[2]}"])
