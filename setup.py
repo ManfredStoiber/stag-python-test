@@ -160,15 +160,18 @@ class CMakeBuild(build_ext):
 
         # compile OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(sys.prefix), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True # TODO: remove install prefix
+            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(f"{build_temp_opencv}/install"), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True # TODO: remove install prefix
         )
         subprocess.run(
             ["cmake", "--build", ".", "-j10", *build_args], cwd=build_temp_opencv, check=True
         )
+        subprocess.run(
+            ["cmake", "--install", ".", *build_args], cwd=build_temp_opencv, check=True
+        )
 
         # compile stag
         subprocess.run(
-            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp_stag, check=True
+            ["cmake", ext.sourcedir, "-DOpenCV_DIR=" + os.path.abspath(f"{build_temp_opencv}/install"), *cmake_args], cwd=build_temp_stag, check=True
         )
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp_stag, check=True

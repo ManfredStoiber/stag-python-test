@@ -22,7 +22,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-find_package(OpenCV 4 REQUIRED)
+find_package(OpenCV 4 REQUIRED PATHS ${OpenCV_DIR})
 find_package(NumPy REQUIRED)
 
 add_subdirectory(submodules/pybind11)
