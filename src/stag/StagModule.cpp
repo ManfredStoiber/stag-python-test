@@ -1,11 +1,11 @@
-#include "submodules/pybind11_opencv_numpy/ndarray_converter.h"
+#include "ndarray_converter.h"
 #include <pybind11/cast.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <vector>
-#include "submodules/stag/src/Marker.h"
-#include "submodules/stag/src/Stag.h"
+#include "../../submodules/stag/src/Marker.h"
+#include "../../submodules/stag/src/Stag.h"
 using cv::Mat;
 
 namespace py = pybind11;
@@ -112,7 +112,7 @@ Mat& drawDetectedMarkers(Mat& image,
     return image;
 }
 
-PYBIND11_MODULE(stag, m) {
+PYBIND11_MODULE(_core, m) {
     NDArrayConverter::init_numpy();
     m.def("detectMarkers",
           &detectMarkers,

@@ -1,6 +1,6 @@
 [project]
 name = "stag-python"
-version = "0.5"
+version = "0.5.5"
 authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
 ]
@@ -23,9 +23,24 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+
 [tool.setuptools]
 license-files = [
     "submodules/*/LICENSE",
     "LICENSE"
 ]
-py-modules = []
+
+[tool.cibuildwheel]
+build-verbosity = 1 # TODO
+
+[tool.cibuildwheel.windows]
+before-build = "pip install delvewheel"
+repair-wheel-command = "python scripts/windows_repair_wheel.py {dest_dir} {wheel}"
+
+## TODO
+#[tool.setuptools.packages.find]
+#where = ["src"]
+#[tool.setuptools.exclude-package-data]
+#stag = ["*.so*"]
+#exclude-package-data = {"stag": "*.so*"}
+
