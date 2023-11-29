@@ -1,6 +1,6 @@
 [project]
 name = "stag-python"
-version = "0.1.8"
+version = "0.2.2"
 authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
 ]
@@ -14,7 +14,7 @@ dependencies = [
 [build-system]
 requires = [
     "setuptools",
-    "oldest-supported-numpy",
+    "numpy",
     "requests",
     "urllib3<2" # requests does not work with urllib>2 on python 3.7, since openssl1.1.1+ is not available
 ]
@@ -27,5 +27,5 @@ license-files = [
 ]
 py-modules = []
 
-[tool.setuptools.package-data]
+#[tool.setuptools.package-data]
 #"stag" = ["libopencv_imgproc*", "libopencv_core*"]
