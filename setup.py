@@ -12,15 +12,15 @@ import zipfile
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
+from setuptools.command.install_lib import install_lib
+
+from distutils.dir_util import mkpath
 
 def get_install_path():
     return sys.prefix
 
 def compile_and_install_opencv():
     pass
-
-with open('README.md') as f:
-    readme = f.read()
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
 PLAT_TO_CMAKE = {
@@ -57,11 +57,13 @@ class CMakeBuild(build_ext):
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
 
         # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
-        # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
-        # from Python.
         cmake_args = [
-            #f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}libraryout{os.sep}",
-            #f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY={extdir}{os.sep}",
+            # since DLL and non-DLL systems are handled differently
+            # in cmake, generate both LIBRARY and RUNTIME artifacts to extdir
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",               
+            f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY={extdir}{os.sep}",               
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}{os.sep}",
+            f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}{os.sep}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
         ]
@@ -108,7 +110,6 @@ class CMakeBuild(build_ext):
             # Multi-config generators have a different way to specify configs
             if not single_config:
                 cmake_args += [
-                    #f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
                 ]
                 build_args += ["--config", cfg]
 
@@ -135,8 +136,6 @@ class CMakeBuild(build_ext):
         if not build_temp_opencv.exists():
             build_temp_opencv.mkdir(parents=True)
 
-        install_temp_opencv = build_temp_opencv / "install"
-
         # exclude modules not required
         opencv_exclude_modules = [
             "ts",
@@ -161,37 +160,44 @@ class CMakeBuild(build_ext):
 
         # compile OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\testopencvlibraryout", "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\testopencvruntimeout", "-DCMAKE_INSTALL_PREFIX=" + str(install_temp_opencv.absolute()), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True
+            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(sys.prefix), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True # TODO: remove install prefix
         )
         subprocess.run(
             ["cmake", "--build", ".", "-j10", *build_args], cwd=build_temp_opencv, check=True
         )
 
-        # install OpenCV
-        subprocess.run(
-            ["cmake", "--install", ".", *build_args], cwd=build_temp_opencv, check=True
-        )
-
-        # copy built libraries to extension directory
-        #shared_lib_pattern = re.compile("^opencv_(core|imgproc)\d*.dll$")
-        #for root, dirs, files in os.walk(install_temp_opencv):
-        #    for file in files:
-        #        if shared_lib_pattern.match(file):
-        #            print(f"found {file}")
-        #            with open(f"{root}{os.sep}{file}", 'rb') as src:
-        #                content = src.read()
-        #            with open(f"{extdir}{os.sep}{file}", 'wb') as dst:
-        #                dst.write(content)
-
-
-
         # compile stag
         subprocess.run(
-            ["cmake", ext.sourcedir, "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\teststaglibraryout", "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\teststagruntimeout", *cmake_args], cwd=build_temp_stag, check=True
+            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp_stag, check=True
         )
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp_stag, check=True
         )
+
+class InstallLib(install_lib):
+    def install(self):
+        outfiles = []
+        if os.path.isdir(self.build_dir):
+            mkpath(self.install_dir)
+            # copy stag module
+            
+            
+            # install only stag module and shared libraries with following format:
+            #   - dLL based systems: opencv_xxx481.dll
+            #   - non dll based systems: libopencv_xxx.so.408
+            shared_lib_pattern = re.compile("^((lib)?opencv_.*(\d*\.dll|\.so\.\d*)|(stag.*))$")
+            files = os.listdir(self.build_dir)
+            for file in files:
+                if shared_lib_pattern.fullmatch(file):
+                    outfile = f"{self.install_dir}{os.sep}{file}"
+                    self.copy_file(f"{self.build_dir}{os.sep}{file}", outfile)
+                    outfiles.append(outfile)
+        else:
+            self.warn(
+                "'%s' does not exist -- no Python modules to install" % self.build_dir
+            )
+            return
+        return outfiles
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
@@ -199,5 +205,5 @@ setup(
     ext_modules=[
         CMakeExtension("stag"),
     ],
-    cmdclass={"build_ext": CMakeBuild},
+    cmdclass={"build_ext": CMakeBuild, "install_lib": InstallLib},
 )

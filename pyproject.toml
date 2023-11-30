@@ -1,6 +1,6 @@
 [project]
 name = "stag-python"
-version = "0.1.7"
+version = "0.1.8"
 authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
 ]
@@ -28,4 +28,4 @@ license-files = [
 py-modules = []
 
 [tool.setuptools.package-data]
-"stag" = ["*.*"]
+#"stag" = ["libopencv_imgproc*", "libopencv_core*"]
