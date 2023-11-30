@@ -23,10 +23,10 @@ jobs:
             {
               cibuildwheel --print-build-identifiers --platform linux \
               | jq -nRc '{"only": inputs, "os": "ubuntu-latest"}' \
-              #&& cibuildwheel --print-build-identifiers --platform macos \
-              #| jq -nRc '{"only": inputs, "os": "macos-latest"}' \
-              #&& cibuildwheel --print-build-identifiers --platform windows \
-              #| jq -nRc '{"only": inputs, "os": "windows-latest"}'
+              && cibuildwheel --print-build-identifiers --platform macos \
+              | jq -nRc '{"only": inputs, "os": "macos-latest"}' \
+              && cibuildwheel --print-build-identifiers --platform windows \
+              | jq -nRc '{"only": inputs, "os": "windows-latest"}'
             } | jq -sc
           )
           echo "include=$MATRIX" >> $GITHUB_OUTPUT
