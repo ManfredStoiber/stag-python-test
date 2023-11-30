@@ -16,23 +16,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install cibuildwheel
-        run: pipx install cibuildwheel==2.13.1
+        run: pipx install cibuildwheel==2.16.2
       - id: set-matrix
         run: |
           MATRIX=$(
             {
-              cibuildwheel --print-build-identifiers --platform linux \
-              | jq -nRc '{"only": inputs, "os": "ubuntu-latest"}' \
-              && cibuildwheel --print-build-identifiers --platform macos \
+              #cibuildwheel --print-build-identifiers --platform linux \
+              #| jq -nRc '{"only": inputs, "os": "ubuntu-latest"}' \
+              #&& \
+              cibuildwheel --print-build-identifiers --platform macos \
               | jq -nRc '{"only": inputs, "os": "macos-latest"}' \
-              && cibuildwheel --print-build-identifiers --platform windows \
-              | jq -nRc '{"only": inputs, "os": "windows-latest"}'
+              #&& cibuildwheel --print-build-identifiers --platform windows \
+              #| jq -nRc '{"only": inputs, "os": "windows-latest"}'
             } | jq -sc
           )
           echo "include=$MATRIX" >> $GITHUB_OUTPUT
     env:
       CIBW_ARCHS_LINUX: x86_64 i686 aarch64 ppc64le
-      CIBW_ARCHS_MACOS: universal2
+      CIBW_ARCHS_MACOS: x86_64 #arm64
       CIBW_ARCHS_WINDOWS: x86 AMD64
 
   build_wheels:
