@@ -60,7 +60,8 @@ class CMakeBuild(build_ext):
         # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
         # from Python.
         cmake_args = [
-            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",
+            #f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}libraryout{os.sep}",
+            #f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY={extdir}{os.sep}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
         ]
@@ -71,7 +72,7 @@ class CMakeBuild(build_ext):
             cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ") if item]
 
         # In this example, we pass in the version to C++. You might not need to.
-        cmake_args += [f"-DEXAMPLE_VERSION_INFO={self.distribution.get_version()}"]
+        #cmake_args += [f"-DEXAMPLE_VERSION_INFO={self.distribution.get_version()}"]
 
         if self.compiler.compiler_type != "msvc":
             # Using Ninja-build since it a) is available as a wheel and b)
@@ -107,7 +108,7 @@ class CMakeBuild(build_ext):
             # Multi-config generators have a different way to specify configs
             if not single_config:
                 cmake_args += [
-                    f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
+                    #f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
                 ]
                 build_args += ["--config", cfg]
 
@@ -134,6 +135,8 @@ class CMakeBuild(build_ext):
         if not build_temp_opencv.exists():
             build_temp_opencv.mkdir(parents=True)
 
+        install_temp_opencv = build_temp_opencv / "install"
+
         # exclude modules not required
         opencv_exclude_modules = [
             "ts",
@@ -146,11 +149,11 @@ class CMakeBuild(build_ext):
         opencv_exclude_modules_args = [f"-DBUILD_opencv_{module}=OFF" for module in opencv_exclude_modules]
 
         # download OpenCV
-        print(f"Downloading OpenCV {opencv_version}..")
+        print(f"Downloading OpenCV {opencv_version}..", flush=True)
         url = f"https://github.com/opencv/opencv/archive/refs/tags/{opencv_version}.zip"
         r = requests.get(url, allow_redirects=True)
 
-        print(f"Extracting OpenCV {opencv_version}..")
+        print(f"Extracting OpenCV {opencv_version}..", flush=True)
         opencv_zipfile = f"{self.build_temp}/opencv.zip"
         open(opencv_zipfile, "wb").write(r.content)
         with zipfile.ZipFile(opencv_zipfile, 'r') as zip_ref:
@@ -158,7 +161,7 @@ class CMakeBuild(build_ext):
 
         # compile OpenCV
         subprocess.run(
-            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_INSTALL_PREFIX=" + os.path.abspath(sys.prefix), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True
+            ["cmake", ext.sourcedir + f"/submodules/opencv-{opencv_version}", "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\testopencvlibraryout", "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\testopencvruntimeout", "-DCMAKE_INSTALL_PREFIX=" + str(install_temp_opencv.absolute()), *opencv_exclude_modules_args, *cmake_args], cwd=build_temp_opencv, check=True
         )
         subprocess.run(
             ["cmake", "--build", ".", "-j10", *build_args], cwd=build_temp_opencv, check=True
@@ -169,9 +172,22 @@ class CMakeBuild(build_ext):
             ["cmake", "--install", ".", *build_args], cwd=build_temp_opencv, check=True
         )
 
+        # copy built libraries to extension directory
+        #shared_lib_pattern = re.compile("^opencv_(core|imgproc)\d*.dll$")
+        #for root, dirs, files in os.walk(install_temp_opencv):
+        #    for file in files:
+        #        if shared_lib_pattern.match(file):
+        #            print(f"found {file}")
+        #            with open(f"{root}{os.sep}{file}", 'rb') as src:
+        #                content = src.read()
+        #            with open(f"{extdir}{os.sep}{file}", 'wb') as dst:
+        #                dst.write(content)
+
+
+
         # compile stag
         subprocess.run(
-            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp_stag, check=True
+            ["cmake", ext.sourcedir, "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\teststaglibraryout", "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=C:\\Users\\Manfred\\Desktop\\teststagruntimeout", *cmake_args], cwd=build_temp_stag, check=True
         )
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp_stag, check=True
