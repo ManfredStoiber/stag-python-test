@@ -188,7 +188,7 @@ class InstallLib(install_lib):
             # install only stag module and shared libraries with following format:
             #   - dLL based systems: opencv_xxx481.dll
             #   - non dll based systems: libopencv_xxx.so.408
-            #   - mac: libopencv_xxx.4.8.1.dylib
+            #   - macos: libopencv_xxx.4.8.1.dylib
             shared_lib_pattern = re.compile("^((lib)?opencv_.*(\d*\.dll|\.so\.\d*|(\.\d)*.dylib)|(stag.*))$")
             files = os.listdir(self.build_dir)
             for file in files:
