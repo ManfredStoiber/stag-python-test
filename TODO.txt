@@ -1,4 +1,0 @@
-- resolve UNKNOWN bug in cp36
-- test on windows
-- update cibw dependency to support python 3.12
-- Die änderungen von den anderen Forks mit rein nehmen (interface statt public, clear markers, etc.)

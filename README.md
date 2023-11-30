@@ -1,3 +1,7 @@
+[![Build and upload to PyPI](https://github.com/ManfredStoiber/stag-python-test/actions/workflows/python-publish.yml/badge.svg)](https://github.com/ManfredStoiber/stag-python-test/actions/workflows/python-publish.yml)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/stag-python)
+
+
 # Python Wrapper for [STag - A Stable, Occlusion-Resistant Fiducial Marker System](https://github.com/ManfredStoiber/stag)
 
 ## 📊 Comparison Between Different Marker Systems:
@@ -28,7 +32,7 @@ For a more comprehensive example refer to [example.py](https://github.com/Manfre
 
 ## 🏷 Markers
 
-- Markers are downloadable here: [Drive](https://drive.google.com/drive/folders/0ByNTNYCAhWbIV1RqdU9vRnd2Vnc?resourcekey=0-9ipvecbezW8EWUva5GBQTQ&usp=sharing)
+- Markers can be downloaded here: [Drive](https://drive.google.com/drive/folders/0ByNTNYCAhWbIV1RqdU9vRnd2Vnc?resourcekey=0-9ipvecbezW8EWUva5GBQTQ&usp=sharing)
 - Reference code for Marker Generator: [ref/marker_generator](https://github.com/ManfredStoiber/stag/tree/master/ref/marker_generator)
 
 ## 🛠 Configuration
@@ -39,9 +43,9 @@ When initializing the library, following parameters can be specified:
       - Only the markers of the chosen library will be detected
    - The following HD libraries are possible:
 
-     | __HD__           | 11     | 13    | 15  | 17  | 19 | 21 | 23 |
-               |------------------|--------|-------|-----|-----|----|----|----|
-     | __Library Size__ | 22,309 | 2,884 | 766 | 157 | 38 | 12 | 6  |
+        | __HD__           | 11     | 13    | 15  | 17  | 19 | 21 | 23 |
+        |------------------|--------|-------|-----|-----|----|----|----|
+        | __Library Size__ | 22,309 | 2,884 | 766 | 157 | 38 | 12 | 6  |
 
    - Specifies the used Hamming Distance, for further information refer to the [original paper](https://arxiv.org/abs/1707.06292)
 

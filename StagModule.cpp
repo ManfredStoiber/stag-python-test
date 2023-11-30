@@ -11,49 +11,33 @@ using cv::Mat;
 namespace py = pybind11;
 using namespace py::literals;
 
-py::tuple getCorners(Stag *stag) {
-    py::tuple ret = py::tuple(stag->markers.size());
-    for (int i=0; i<stag->markers.size(); i++) {
-        std::vector<std::vector<double>> contours_vec;
-        for (cv::Point2d pt : stag->markers[i].corners) {
-            contours_vec.push_back({pt.x, pt.y});
-        }
-        py::array contours = py::cast(contours_vec);
-        ret[i] = contours.reshape({1, 4, 2});
-    }
-    return ret;
-}
 
-py::array getIds(Stag *stag) {
-    std::vector<int> ret_vec;
-    for (const Marker& marker : stag->markers) {
-        ret_vec.push_back(marker.id);
-    }
-    py::array ret = py::cast(ret_vec);
-    return ret.reshape({-1, 1});
-}
-
-py::tuple getRejectedImgPoints(Stag *stag) {
-    py::tuple ret = py::tuple(stag->falseCandidates.size());
-    for (int i=0; i<stag->falseCandidates.size(); i++) {
-        std::vector<std::vector<double>> contours_vec;
-        for (cv::Point2d pt : stag->falseCandidates[i].corners) {
-            contours_vec.push_back({pt.x, pt.y});
-        }
-        py::array contours = py::cast(contours_vec);
-        ret[i] = contours.reshape({1, 4, 2});
-    }
-    return ret;
-}
-
+/**
+ * Detects markers in given image.
+ * @param inImage OpenCV Matrix of input image.
+ * @param libraryHD The library HD that is used. Possible values are [11,&nbsp;13,&nbsp;15,&nbsp;17,&nbsp;19,&nbsp;21,&nbsp;23].
+ * @param errorCorrection The amount of error correction that is going to be used.
+ *  Value needs to be in range 0&nbsp;\<=&nbsp;errorCorrection&nbsp;\<=&nbsp;(HD-1)/2.\n
+ *  If set to -1, the max possible value for the given library HD
+ *  is used.
+ * @returns Tuple of (corners, ids, rejectedImgPoints) of detected markers
+ */
 py::tuple detectMarkers(const Mat &inImage, int libraryHD, int errorCorrection=-1) {
-    Stag stag(libraryHD, errorCorrection);
-    stag.detectMarkers(inImage);
-    py::tuple ret = py::make_tuple(getCorners(&stag), getIds(&stag), getRejectedImgPoints(&stag));
+    auto corners = std::vector<std::vector<cv::Point2f>>();
+    auto ids = std::vector<int>();
+    auto rejectedImgPoints = std::vector<std::vector<cv::Point2f>>();
+
+    stag::detectMarkers(inImage, libraryHD, corners, ids, errorCorrection);
+    py::tuple ret = py::make_tuple(corners, ids, rejectedImgPoints);
     return ret;
 }
 
 PYBIND11_MODULE(stag, m) {
     NDArrayConverter::init_numpy();
-    m.def("detectMarkers", &detectMarkers, "Detect STag markers in image. Returns (corners, ids, rejectedImgPoints) of detected markers.");
+    m.def("detectMarkers", &detectMarkers, "Detect STag markers in given image.\n\t@param Test\n\t@Returns (corners, ids, rejectedImgPoints) of detected markers.");
+}
+
+int main() {
+    cv::Mat image = cv::imread("example/example.jpg");
+    return 0;
 }
