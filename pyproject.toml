@@ -28,4 +28,4 @@ license-files = [
 py-modules = []
 
 [tool.setuptools.package-data]
-"stag" = ["*.*"]
+#"stag" = ["libopencv_imgproc*", "libopencv_core*"]
