@@ -36,7 +36,7 @@ For a more comprehensive example refer to [example.py](https://github.com/Manfre
 - Reference code for Marker Generator: [ref/marker_generator](https://github.com/ManfredStoiber/stag/tree/master/ref/marker_generator)
 
 ## 🛠 Configuration
-When initializing the library, following parameters can be specified:
+Following parameters can be specified:
 - __`libraryHD`__:
    - Sets the "family" or "type" of used STag markers
       - Each library has a different amount of markers
