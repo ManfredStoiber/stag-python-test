@@ -22,17 +22,12 @@ jobs:
           MATRIX=$(
             {
               cibuildwheel --print-build-identifiers --platform linux \
-              | jq -nRc '{"only": inputs, "os": "ubuntu-latest"}' \
-              && \
-              cibuildwheel --print-build-identifiers --platform macos \
-              | jq -nRc '{"only": inputs, "os": "macos-latest"}' \
-              && cibuildwheel --print-build-identifiers --platform windows \
-              | jq -nRc '{"only": inputs, "os": "windows-latest"}'
+              | jq -nRc '{"only": inputs, "os": "ubuntu-latest"}'
             } | jq -sc
           )
           echo "include=$MATRIX" >> $GITHUB_OUTPUT
     env:
-      CIBW_ARCHS_LINUX: x86_64 i686 aarch64 ppc64le
+      CIBW_ARCHS_LINUX: x86_64 i686
       CIBW_ARCHS_MACOS: x86_64 # arm64 not working due to linker errors
       CIBW_ARCHS_WINDOWS: x86 AMD64
       CIBW_SKIP: >
@@ -88,9 +83,7 @@ jobs:
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/stag-python
+    environment: pypi
     permissions:
       id-token: write
     if: github.event_name == 'release' && github.event.action == 'published'
@@ -101,3 +94,5 @@ jobs:
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
