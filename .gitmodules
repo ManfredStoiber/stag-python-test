@@ -7,4 +7,4 @@
 	url = https://github.com/edmBernard/pybind11_opencv_numpy
 [submodule "submodules/stag"]
 	path = submodules/stag
-	url = https://github.com/ManfredStoiber/stag
+	url = https://github.com/ManfredStoiber/stag-test
