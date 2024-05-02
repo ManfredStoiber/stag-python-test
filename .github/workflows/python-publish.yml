@@ -85,9 +85,7 @@ jobs:
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/stag-python
+    environment: pypi
     permissions:
       id-token: write
     if: github.event_name == 'release' && github.event.action == 'published'
@@ -101,3 +99,5 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: true
+          with:
+            repository-url: https://test.pypi.org/legacy/
