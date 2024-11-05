@@ -32,9 +32,9 @@ jobs:
           )
           echo "include=$MATRIX" >> $GITHUB_OUTPUT
     env:
-      CIBW_ARCHS_LINUX: x86_64 i686 aarch64 ppc64le
-      CIBW_ARCHS_MACOS: x86_64 # arm64 not working due to linker errors
-      CIBW_ARCHS_WINDOWS: x86 AMD64
+      CIBW_ARCHS_LINUX: # x86_64 i686 aarch64 ppc64le
+      CIBW_ARCHS_MACOS: x86_64 arm64 universal2 # not working due to linker errors
+      CIBW_ARCHS_WINDOWS: # x86 AMD64
       CIBW_SKIP: >
         pp37-win_amd64 # not working due to compiler errors during numpy installation
         pp310-win_amd64 # not working due to missing ndarrayobject.h. Warning from numpy: Numpy built with MINGW-W64 on Windows 64 bits is experimental, and only available for testing.
