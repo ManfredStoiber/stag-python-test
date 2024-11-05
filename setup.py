@@ -1,5 +1,5 @@
 # This file is heavily inspired by: https://github.com/pybind/cmake_example/blob/master/setup.py
-opencv_version = "4.8.1"
+opencv_version = "4.10.0"
 
 import os
 import re
