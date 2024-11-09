@@ -32,7 +32,7 @@ jobs:
       CIBW_ARCHS_WINDOWS: x86 # AMD64
       CIBW_SKIP: >
         pp310-win_amd64 # not working due to missing ndarrayobject.h. Warning from numpy: Numpy built with MINGW-W64 on Windows 64 bits is experimental, and only available for testing.
-        cp312-macosx_x86_64
+        cp313-macosx_x86_64
         cp311-macosx_x86_64
         cp310-macosx_x86_64
         cp39-macosx_x86_64

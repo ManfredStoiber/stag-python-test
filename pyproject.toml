@@ -31,8 +31,7 @@ Homepage = "https://github.com/manfredstoiber/stag-python"
 [build-system]
 requires = [
     "setuptools",
-    "oldest-supported-numpy; platform_machine!='aarch64' and python_version!='3.12' and (python_version!='3.10' or platform_system!='Windows' or platform_python_implementation!='PyPy')",
-    "numpy==1.26.4; python_version=='3.12'",
+    "oldest-supported-numpy; platform_machine!='aarch64' and (python_version!='3.10' or platform_system!='Windows' or platform_python_implementation!='PyPy')",
     "requests",
     "urllib3<2" # requests does not work with urllib>2 on python 3.7, since openssl1.1.1+ is not available
 ]
