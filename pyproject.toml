@@ -5,7 +5,7 @@ authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
 ]
 description = "STag - A Stable, Occlusion-Resistant Fiducial Marker System"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 readme = "README.md"
 dependencies = [
     "numpy"
@@ -14,12 +14,11 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Home Automation",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Image Recognition",
@@ -31,11 +30,9 @@ Homepage = "https://github.com/manfredstoiber/stag-python"
 
 [build-system]
 requires = [
-    "setuptools",
-    "oldest-supported-numpy; ((python_version!='3.7' and python_version!='3.8') or platform_machine!='aarch64') and python_version!='3.12' and (python_version!='3.10' or platform_system!='Windows' or platform_python_implementation!='PyPy') and (python_version!='3.7' or platform_system!='Darwin' or platform_python_implementation!='PyPy' or platform_machine!='x86_64')",
-    "numpy==1.21.6; (python_version=='3.7' or python_version=='3.8') and platform_machine=='aarch64'",
+    "setuptools<65",
+    "oldest-supported-numpy; platform_machine!='aarch64' and python_version!='3.12' and (python_version!='3.10' or platform_system!='Windows' or platform_python_implementation!='PyPy')",
     "numpy==1.26.2; python_version=='3.12'",
-    "numpy; python_version=='3.7' and platform_system=='Darwin' and platform_python_implementation=='PyPy' and platform_machine=='x86_64'",
     "requests",
     "urllib3<2" # requests does not work with urllib>2 on python 3.7, since openssl1.1.1+ is not available
 ]
