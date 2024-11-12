@@ -1,8 +1,6 @@
 name: Build and upload to PyPI
 
-on:
-  release:
-    types: [published]
+on: push
 
 permissions:
   contents: read
@@ -55,7 +53,7 @@ jobs:
         with:
           only: ${{ matrix.only }}
         env:
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""
+          MACOSX_DEPLOYMENT_TARGET: 10.15
 
       - uses: actions/upload-artifact@v4
         with:
