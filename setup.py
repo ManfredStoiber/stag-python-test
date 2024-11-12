@@ -12,9 +12,6 @@ import zipfile
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
-from setuptools.command.install_lib import install_lib
-
-from distutils.dir_util import mkpath
 
 def get_install_path():
     return sys.prefix
