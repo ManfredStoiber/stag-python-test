@@ -1,6 +1,6 @@
 [project]
 name = "stag-python"
-version = "1.1.0.19"
+version = "1.1.0.20"
 authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
 ]
@@ -8,7 +8,7 @@ description = "STag - A Stable, Occlusion-Resistant Fiducial Marker System"
 requires-python = ">=3.9"
 readme = "README.md"
 dependencies = [
-    "numpy"
+    "numpy>=1.25"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
