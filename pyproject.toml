@@ -1,6 +1,6 @@
 [project]
 name = "stag-python"
-version = "1.1.0.22"
+version = "1.1.0.23"
 authors = [
     {name = "Manfred Stoiber", email = "manfred.stoiber@gmail.com"}
 ]
